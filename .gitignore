@@ -1,0 +1,14 @@
+.idea/
+.DS_Store
+
+# Ansible files
+artifacts/
+inventory/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+venv/

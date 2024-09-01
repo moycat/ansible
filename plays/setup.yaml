@@ -1,0 +1,44 @@
+- name: Initialize system
+  hosts: all
+  remote_user: moycat
+  become: true
+  tasks:
+    - name: Update & upgrade
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: full
+    - name: Install packages
+      ansible.builtin.apt:
+        pkg: [
+          # Utilities
+          vim, wget, curl, rsync, htop, tmux, iftop, iotop, net-tools, dnsutils, vim, tcpdump, fio, jq, zip, unzip,
+          zsh, iperf3, socat, ethtool, tree, nmap, gpg, gnupg2, xfsprogs, xxd, psmisc,
+          # Development tools
+          git, gdb, strace, python3, python3-venv, python3-pip,
+          # Build tools
+          build-essential, pkg-config, cmake, autoconf, automake, pkg-config, clang, flex, bison,
+        ]
+    - name: Set kernel parameters
+      ansible.builtin.copy:
+        src: sysctl.conf
+        dest: /etc/sysctl.conf
+    - name: Apply kernel parameters
+      ansible.builtin.shell: |
+        /sbin/sysctl -p
+- name: Initialize user environment
+  hosts: all
+  remote_user: moycat
+  tasks:
+    - name: Install SSH pubkey
+      ansible.posix.authorized_key:
+        user: moycat
+        state: present
+        key: https://github.com/moycat.keys
+    - name: Install Oh My Zsh
+      ansible.builtin.shell: |
+        rm -rf ~/.oh-my-zsh
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    - name: Set default shell
+      become: true
+      ansible.builtin.shell: |
+        chsh -s /bin/zsh moycat
