@@ -2,7 +2,6 @@
   hosts: all
   remote_user: moycat
   become: true
-  become_method: ansible.builtin.su
   tasks:
     - name: Update & upgrade
       ansible.builtin.apt:
